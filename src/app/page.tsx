@@ -1,14 +1,14 @@
 'use client';
 
-import { useOrder } from '@/lib/context';
-import { NavSteps } from '@/components/nav-steps';
-import { SkipSelection } from '@/components/skip-selection';
-import { PostcodeStep } from '@/components/postcode-step';
-import { WasteTypeSelection } from '@/components/waste-type-selection';
-import { LocationSelection } from '@/components/location-selection';
 import { DateSelection } from '@/components/date-selection';
+import { LocationSelection } from '@/components/location-selection';
 import { Logo } from '@/components/logo';
-import { useEffect } from 'react';
+import { NavSteps } from '@/components/nav-steps';
+import { PaymentStep } from '@/components/payment-step';
+import { PostcodeStep } from '@/components/postcode-step';
+import { SkipSelection } from '@/components/skip-selection';
+import { WasteTypeSelection } from '@/components/waste-type-selection';
+import { useOrder } from '@/lib/context';
 import { AlertTriangle } from 'lucide-react';
 
 // This would be replaced by actual step components in a full implementation
@@ -49,7 +49,7 @@ export default function Home() {
         {state.step === 3 && <SkipSelection />}
         {state.step === 4 && <LocationSelection />}
         {state.step === 5 && <DateSelection />}
-        {state.step === 6 && <StepPlaceholder title="Payment" />}
+        {state.step === 6 && <PaymentStep />}
       </section>
 
       <footer className="py-6 border-t border-border text-center text-muted-foreground text-sm">
