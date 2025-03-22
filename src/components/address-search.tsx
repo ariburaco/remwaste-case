@@ -9,12 +9,12 @@ import { useOrder } from '@/lib/context';
 import { searchAddress, AddressItem } from '@/lib/api';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useQuery } from '@tanstack/react-query';
+import { useDebounce } from '@/lib/hooks';
 
 export function AddressSearch() {
   const { state, updatePostcode, updateAddress, nextStep } = useOrder();
   const [query, setQuery] = useState('');
-  const [results, setResults] = useState<AddressItem[]>([]);
-  const [loading, setLoading] = useState(false);
   const [focused, setFocused] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState<AddressItem | null>(
     null
@@ -24,44 +24,66 @@ export function AddressSearch() {
     street: '',
     houseNumber: '',
   });
+
   const resultsRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const inputContainerRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    // Debounce the search
-    const handler = setTimeout(async () => {
-      if (query.length >= 3 && !selectedAddress) {
-        setLoading(true);
-        try {
-          const data = await searchAddress(query);
-          setResults(data.Items);
-        } catch (error) {
-          console.error('Error fetching addresses:', error);
-        } finally {
-          setLoading(false);
-        }
-      } else if (query.length === 0) {
-        setResults([]);
-      }
-    }, 300);
+  // Debounce the search query
+  const debouncedQuery = useDebounce(query, 300);
 
-    return () => clearTimeout(handler);
-  }, [query, selectedAddress]);
+  // Use React Query for address search
+  const { data, isLoading } = useQuery({
+    queryKey: ['addresses', debouncedQuery],
+    queryFn: () => searchAddress(debouncedQuery),
+    enabled: debouncedQuery.length >= 3 && !selectedAddress,
+    staleTime: 1000 * 60 * 5, // Keep data fresh for 5 minutes
+    select: (data) => {
+      // Sort results: prioritize exact matches, then by relevance
+      return {
+        ...data,
+        Items: [...data.Items].sort((a, b) => {
+          // Exact match for postcode goes first
+          const aExact = a.Text.toLowerCase().includes(
+            debouncedQuery.toLowerCase()
+          );
+          const bExact = b.Text.toLowerCase().includes(
+            debouncedQuery.toLowerCase()
+          );
 
-  useEffect(() => {
-    // Handle clicks outside of the results dropdown
-    function handleClickOutside(event: MouseEvent) {
-      if (
-        resultsRef.current &&
-        !resultsRef.current.contains(event.target as Node) &&
-        inputRef.current &&
-        !inputRef.current.contains(event.target as Node)
-      ) {
-        setFocused(false);
-      }
+          if (aExact && !bExact) return -1;
+          if (!aExact && bExact) return 1;
+
+          // Then sort by type (prefer postcodes)
+          const aIsPostcode = a.Type.toLowerCase().includes('postcode');
+          const bIsPostcode = b.Type.toLowerCase().includes('postcode');
+
+          if (aIsPostcode && !bIsPostcode) return -1;
+          if (!aIsPostcode && bIsPostcode) return 1;
+
+          // Then alphabetically
+          return a.Text.localeCompare(b.Text);
+        }),
+      };
+    },
+  });
+
+  const results = data?.Items || [];
+
+  // Handle clicks outside of the results dropdown
+  const handleClickOutside = (event: MouseEvent) => {
+    if (
+      resultsRef.current &&
+      !resultsRef.current.contains(event.target as Node) &&
+      inputRef.current &&
+      !inputRef.current.contains(event.target as Node)
+    ) {
+      setFocused(false);
     }
+  };
 
+  // Add and remove event listener
+  useEffect(() => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
@@ -95,7 +117,6 @@ export function AddressSearch() {
   const handleClearSelection = () => {
     setSelectedAddress(null);
     setQuery('');
-    setResults([]);
     setTimeout(() => {
       inputRef.current?.focus();
     }, 10);
@@ -103,17 +124,21 @@ export function AddressSearch() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
     if (selectedAddress) {
       nextStep();
     }
   };
 
+  const showResults = focused && results.length > 0 && !selectedAddress;
+
   return (
     <div className="w-full max-w-lg mx-auto">
       <form onSubmit={handleSubmit} className="space-y-5">
         <div className="flex flex-col gap-4">
-          <Label htmlFor="postcode-search" className="text-foreground text-base">
+          <Label
+            htmlFor="postcode-search"
+            className="text-foreground text-base"
+          >
             Find your address
           </Label>
           <div className="relative" ref={inputContainerRef}>
@@ -129,14 +154,18 @@ export function AddressSearch() {
               placeholder="Enter your postcode or street name"
               className={cn(
                 'pl-10 pr-10 bg-background border-input transition-all duration-200 h-12',
-                selectedAddress ? 'ring-2 ring-primary/20' : focused ? 'ring-2 ring-primary/10' : ''
+                selectedAddress
+                  ? 'ring-2 ring-primary/20'
+                  : focused
+                  ? 'ring-2 ring-primary/10'
+                  : ''
               )}
               disabled={!!selectedAddress}
             />
             <AnimatePresence>
               {query && (
                 <div className="absolute inset-y-0 right-3 flex items-center">
-                  {loading ? (
+                  {isLoading ? (
                     <motion.div
                       initial={{ opacity: 0, scale: 0.8 }}
                       animate={{ opacity: 1, scale: 1 }}
@@ -166,7 +195,7 @@ export function AddressSearch() {
 
           {/* Dropdown results */}
           <AnimatePresence>
-            {focused && results.length > 0 && !selectedAddress && (
+            {showResults && (
               <motion.div
                 ref={resultsRef}
                 initial={{ opacity: 0, y: -10 }}
@@ -176,8 +205,10 @@ export function AddressSearch() {
                 className="absolute z-10 w-full max-w-lg mt-1 bg-popover border border-input rounded-md shadow-md overflow-hidden"
                 style={{
                   top: inputContainerRef.current
-                    ? inputContainerRef.current.offsetTop + inputContainerRef.current.offsetHeight + 8
-                    : 76
+                    ? inputContainerRef.current.offsetTop +
+                      inputContainerRef.current.offsetHeight +
+                      8
+                    : 76,
                 }}
               >
                 <div className="max-h-72 overflow-y-auto">
@@ -190,12 +221,18 @@ export function AddressSearch() {
                       initial={{ opacity: 0, y: -5 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.15, delay: index * 0.03 }}
-                      whileHover={{ backgroundColor: 'rgba(var(--accent), 0.7)' }}
+                      whileHover={{
+                        backgroundColor: 'rgba(var(--accent), 0.7)',
+                      }}
                     >
                       <MapPin size={18} className="mt-0.5 text-primary" />
                       <div>
-                        <p className="font-medium text-foreground">{item.Text}</p>
-                        <p className="text-sm text-muted-foreground">{item.Description}</p>
+                        <p className="font-medium text-foreground">
+                          {item.Text}
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          {item.Description}
+                        </p>
                       </div>
                     </motion.button>
                   ))}
@@ -287,7 +324,9 @@ export function AddressSearch() {
             disabled={!selectedAddress}
             className={cn(
               'w-full transition-all duration-300 h-12 text-base',
-              !selectedAddress ? 'bg-muted text-muted-foreground' : 'bg-primary text-primary-foreground'
+              !selectedAddress
+                ? 'bg-muted text-muted-foreground'
+                : 'bg-primary text-primary-foreground'
             )}
           >
             <motion.span

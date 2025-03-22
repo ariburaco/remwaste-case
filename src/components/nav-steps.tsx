@@ -140,7 +140,7 @@ export function NavSteps() {
               )}
 
               {step.id < steps.length && (
-                <div className="absolute left-10 top-6 transform -translate-y-1/2">
+                <div className="absolute left-12 top-6 transform -translate-y-1/2">
                   <motion.div
                     className={cn(
                       'hidden md:block w-20 h-1 rounded-full transition-all',

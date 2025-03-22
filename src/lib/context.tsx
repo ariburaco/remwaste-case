@@ -1,7 +1,9 @@
-"use client";
+'use client';
 
-import { createContext, useContext, useState, ReactNode } from "react";
-import { Skip } from "./api";
+import { createContext, useContext, useState, ReactNode } from 'react';
+import { Skip } from './api';
+import { createQueryClient } from './query-client';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 interface OrderState {
   postcode: string;
@@ -28,14 +30,24 @@ interface OrderContextType {
 
 const OrderContext = createContext<OrderContextType | undefined>(undefined);
 
+let clientQueryClientSingleton: QueryClient | undefined = undefined;
+const getQueryClient = () => {
+  if (typeof window === 'undefined') {
+    // Server: always make a new query client
+    return createQueryClient();
+  }
+  // Browser: use singleton pattern to keep the same query client
+  return (clientQueryClientSingleton ??= createQueryClient());
+};
+
 export function OrderProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<OrderState>({
-    postcode: "",
+    postcode: '',
     wasteType: [],
     selectedSkip: null,
     permitRequired: false,
     date: null,
-    address: "",
+    address: '',
     step: 1,
   });
 
@@ -76,29 +88,31 @@ export function OrderProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <OrderContext.Provider
-      value={{
-        state,
-        updatePostcode,
-        updateWasteType,
-        selectSkip,
-        updatePermit,
-        updateDate,
-        updateAddress,
-        goToStep,
-        nextStep,
-        prevStep,
-      }}
-    >
-      {children}
-    </OrderContext.Provider>
+    <QueryClientProvider client={getQueryClient()}>
+      <OrderContext.Provider
+        value={{
+          state,
+          updatePostcode,
+          updateWasteType,
+          selectSkip,
+          updatePermit,
+          updateDate,
+          updateAddress,
+          goToStep,
+          nextStep,
+          prevStep,
+        }}
+      >
+        {children}
+      </OrderContext.Provider>
+    </QueryClientProvider>
   );
 }
 
 export function useOrder() {
   const context = useContext(OrderContext);
   if (context === undefined) {
-    throw new Error("useOrder must be used within an OrderProvider");
+    throw new Error('useOrder must be used within an OrderProvider');
   }
   return context;
-} 
+}
