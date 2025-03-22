@@ -6,6 +6,7 @@ import { SkipSelection } from '@/components/skip-selection';
 import { PostcodeStep } from '@/components/postcode-step';
 import { WasteTypeSelection } from '@/components/waste-type-selection';
 import { LocationSelection } from '@/components/location-selection';
+import { DateSelection } from '@/components/date-selection';
 import { Logo } from '@/components/logo';
 import { useEffect } from 'react';
 import { AlertTriangle } from 'lucide-react';
@@ -24,7 +25,7 @@ const StepPlaceholder = ({ title }: { title: string }) => (
         This is a placeholder for the {title.toLowerCase()} step.
       </p>
       <p className="mt-4 text-sm text-muted-foreground">
-        For this case study, only the first four steps are fully implemented.
+        For this case study, only the first five steps are fully implemented.
       </p>
     </div>
   </div>
@@ -47,7 +48,7 @@ export default function Home() {
         {state.step === 2 && <WasteTypeSelection />}
         {state.step === 3 && <SkipSelection />}
         {state.step === 4 && <LocationSelection />}
-        {state.step === 5 && <StepPlaceholder title="Choose Date" />}
+        {state.step === 5 && <DateSelection />}
         {state.step === 6 && <StepPlaceholder title="Payment" />}
       </section>
 
