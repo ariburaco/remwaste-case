@@ -13,6 +13,8 @@ interface OrderState {
   date: Date | null;
   address: string;
   step: number;
+  skipLocation: string;
+  skipPhoto: File | null;
 }
 
 interface OrderContextType {
@@ -26,6 +28,8 @@ interface OrderContextType {
   goToStep: (step: number) => void;
   nextStep: () => void;
   prevStep: () => void;
+  setSkipLocation: (location: string) => void;
+  setSkipPhoto: (photo: File) => void;
 }
 
 const OrderContext = createContext<OrderContextType | undefined>(undefined);
@@ -49,6 +53,8 @@ export function OrderProvider({ children }: { children: ReactNode }) {
     date: null,
     address: '',
     step: 1,
+    skipLocation: 'private',
+    skipPhoto: null,
   });
 
   const updatePostcode = (postcode: string) => {
@@ -73,6 +79,18 @@ export function OrderProvider({ children }: { children: ReactNode }) {
 
   const updateAddress = (address: string) => {
     setState((prev) => ({ ...prev, address }));
+  };
+
+  const setSkipLocation = (location: string) => {
+    setState((prev) => ({ 
+      ...prev, 
+      skipLocation: location,
+      permitRequired: location === 'public'
+    }));
+  };
+
+  const setSkipPhoto = (photo: File) => {
+    setState((prev) => ({ ...prev, skipPhoto: photo }));
   };
 
   const goToStep = (step: number) => {
@@ -101,6 +119,8 @@ export function OrderProvider({ children }: { children: ReactNode }) {
           goToStep,
           nextStep,
           prevStep,
+          setSkipLocation,
+          setSkipPhoto,
         }}
       >
         {children}
