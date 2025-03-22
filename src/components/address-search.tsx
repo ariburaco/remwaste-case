@@ -37,35 +37,6 @@ export function AddressSearch() {
     queryKey: ['addresses', debouncedQuery],
     queryFn: () => searchAddress(debouncedQuery),
     enabled: debouncedQuery.length >= 3 && !selectedAddress,
-    staleTime: 1000 * 60 * 5, // Keep data fresh for 5 minutes
-    select: (data) => {
-      // Sort results: prioritize exact matches, then by relevance
-      return {
-        ...data,
-        Items: [...data.Items].sort((a, b) => {
-          // Exact match for postcode goes first
-          const aExact = a.Text.toLowerCase().includes(
-            debouncedQuery.toLowerCase()
-          );
-          const bExact = b.Text.toLowerCase().includes(
-            debouncedQuery.toLowerCase()
-          );
-
-          if (aExact && !bExact) return -1;
-          if (!aExact && bExact) return 1;
-
-          // Then sort by type (prefer postcodes)
-          const aIsPostcode = a.Type.toLowerCase().includes('postcode');
-          const bIsPostcode = b.Type.toLowerCase().includes('postcode');
-
-          if (aIsPostcode && !bIsPostcode) return -1;
-          if (!aIsPostcode && bIsPostcode) return 1;
-
-          // Then alphabetically
-          return a.Text.localeCompare(b.Text);
-        }),
-      };
-    },
   });
 
   const results = data?.Items || [];

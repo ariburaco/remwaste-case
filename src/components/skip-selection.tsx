@@ -53,8 +53,6 @@ export function SkipSelection() {
       return getSkipsByLocation(addressData.postcodePrefix, addressData.area);
     },
     enabled: !!addressData, // Only run the query if we have address data
-    staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
-    retry: 1, // Only retry once on failure
   });
 
   const skips = data?.skips || [];
