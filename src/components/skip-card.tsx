@@ -4,21 +4,19 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Skip } from '@/lib/api';
-import { useOrder } from '@/lib/context';
 import { cn, formatCurrency } from '@/lib/utils';
-import { Check, Truck } from 'lucide-react';
+import { Check } from 'lucide-react';
+import { SkipVisualization } from './skip-visualization';
 
 interface SkipCardProps {
   skip: Skip;
+  isSelected: boolean;
+  onSelect: (skip: Skip) => void;
 }
 
-export function SkipCard({ skip }: SkipCardProps) {
-  const { state, selectSkip, nextStep } = useOrder();
-  const isSelected = state.selectedSkip?.id === skip.id;
-
+export function SkipCard({ skip, isSelected, onSelect }: SkipCardProps) {
   const handleSelect = () => {
-    selectSkip(skip);
-    nextStep();
+    onSelect(skip);
   };
 
   return (
@@ -41,16 +39,7 @@ export function SkipCard({ skip }: SkipCardProps) {
 
       <div className="p-5 space-y-4">
         <div className="aspect-video relative bg-gradient-to-br from-card to-background rounded-md flex items-center justify-center mb-3 overflow-hidden">
-          <Truck size={60} className="text-muted-foreground" />
-
-          <div className="absolute bottom-2 right-2">
-            <Badge
-              variant="outline"
-              className="bg-background/60 backdrop-blur-sm border-border text-foreground"
-            >
-              {skip.size} Yards
-            </Badge>
-          </div>
+          <SkipVisualization size={skip.size} />
         </div>
 
         <div>

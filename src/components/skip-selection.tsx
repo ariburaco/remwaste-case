@@ -12,15 +12,20 @@ import type { Skip, SkipResponse } from '@/lib/api';
 import { getSkipsByLocation } from '@/lib/api';
 import { useOrder } from '@/lib/context';
 import { AnimatePresence, motion } from 'framer-motion';
-import { AlertCircle, ArrowLeft, PackageSearch, TruckIcon } from 'lucide-react';
+import { AlertCircle, ArrowLeft, ArrowRight, PackageSearch, TruckIcon } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { SkipCard } from './skip-card';
 import { useQuery } from '@tanstack/react-query';
+import { SkipVisualization } from './skip-visualization';
+import { Card } from './ui/card';
+import { formatCurrency } from '@/lib/utils';
 
 export function SkipSelection() {
-  const { state, prevStep } = useOrder();
+  const { state, prevStep, selectSkip, nextStep } = useOrder();
   const [filteredSkips, setFilteredSkips] = useState<Skip[]>([]);
   const [sortOption, setSortOption] = useState<string>('recommended');
+  const [selectedSkip, setSelectedSkip] = useState<Skip | null>(state.selectedSkip);
+  const [showPreview, setShowPreview] = useState<boolean>(!!state.selectedSkip);
 
   // Prepare address data for the query
   const getAddressData = () => {
@@ -87,6 +92,25 @@ export function SkipSelection() {
 
     setFilteredSkips(sorted);
   }, [data, sortOption, state.wasteType]);
+
+  // Handle skip selection
+  const handleSkipSelect = (skip: Skip) => {
+    setSelectedSkip(skip);
+    setShowPreview(true);
+  };
+
+  // Handle confirmation
+  const handleConfirm = () => {
+    if (selectedSkip) {
+      selectSkip(selectedSkip);
+      nextStep();
+    }
+  };
+
+  const handleCancelPreview = () => {
+    setShowPreview(false);
+    setSelectedSkip(null);
+  };
 
   const errorMessage = error
     ? error.message
@@ -204,7 +228,11 @@ export function SkipSelection() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.1, duration: 0.4 }}
                   >
-                    <SkipCard skip={skip} />
+                    <SkipCard 
+                      skip={skip} 
+                      isSelected={selectedSkip?.id === skip.id}
+                      onSelect={handleSkipSelect}
+                    />
                   </motion.div>
                 ))}
               </div>
@@ -238,6 +266,56 @@ export function SkipSelection() {
                 Back to waste selection
               </Button>
             </div>
+
+            {/* Skip Preview at the bottom */}
+            <AnimatePresence>
+              {showPreview && selectedSkip && (
+                <motion.div
+                  initial={{ opacity: 0, y: 100 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 100 }}
+                  transition={{ 
+                    type: 'spring',
+                    stiffness: 300,
+                    damping: 30
+                  }}
+                  className="fixed bottom-0 left-0 right-0 border-t bg-background shadow-lg p-4 z-50"
+                >
+                  <div className="w-full max-w-6xl mx-auto">
+                    <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                      <div className="flex items-center space-x-4">
+                        <div className="w-16 h-16 relative">
+                          <SkipVisualization size={selectedSkip.size} />
+                        </div>
+                        <div>
+                          <h3 className="text-xl font-bold text-foreground">
+                            {selectedSkip.size} Yard Skip
+                          </h3>
+                          <p className="text-muted-foreground text-sm">
+                            {selectedSkip.hire_period_days} day hire • {formatCurrency(selectedSkip.price_before_vat, 'GBP')}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex space-x-3">
+                        <Button 
+                          variant="outline" 
+                          onClick={handleCancelPreview}
+                          className="border-border hover:bg-accent"
+                        >
+                          Cancel
+                        </Button>
+                        <Button 
+                          onClick={handleConfirm}
+                          className="bg-primary text-primary-foreground hover:bg-primary/90"
+                        >
+                          Continue <ArrowRight size={18} className="ml-2" />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </motion.div>
         )}
       </AnimatePresence>
