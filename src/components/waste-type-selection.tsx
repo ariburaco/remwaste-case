@@ -153,7 +153,7 @@ export function WasteTypeSelection() {
             className={cn(
               'relative overflow-hidden transition-all duration-300 border-2 cursor-pointer',
               selectedTypes.includes(type.id)
-                ? 'border-blue-500'
+                ? 'border-primary'
                 : 'border-border hover:border-muted-foreground/50'
             )}
             onClick={() => handleTypeSelect(type.id)}
@@ -162,6 +162,7 @@ export function WasteTypeSelection() {
               <Checkbox
                 checked={selectedTypes.includes(type.id)}
                 onCheckedChange={() => handleTypeSelect(type.id)}
+                className="border-primary"
               />
             </div>
             <div className="p-5 space-y-4">
@@ -198,40 +199,6 @@ export function WasteTypeSelection() {
             </div>
           </Card>
         ))}
-      </div>
-
-      <div className="bg-card border border-border p-4 rounded-lg mb-8">
-        <h3 className="font-medium text-foreground mb-3">
-          Special items that require additional handling:
-        </h3>
-        <div className="space-y-3">
-          <div className="flex items-center gap-3">
-            <Checkbox
-              id="plasterboard"
-              checked={specialItems.plasterboard}
-              onCheckedChange={() => handleSpecialItemChange('plasterboard')}
-            />
-            <label
-              htmlFor="plasterboard"
-              className="text-foreground cursor-pointer"
-            >
-              Plasterboard and drywall materials
-            </label>
-          </div>
-          <div className="flex items-center gap-3">
-            <Checkbox
-              id="heavyMaterials"
-              checked={specialItems.heavyMaterials}
-              onCheckedChange={() => handleSpecialItemChange('heavyMaterials')}
-            />
-            <label
-              htmlFor="heavyMaterials"
-              className="text-foreground cursor-pointer"
-            >
-              Heavy construction materials (soil, concrete, etc.)
-            </label>
-          </div>
-        </div>
       </div>
 
       <div className="flex flex-col gap-4 sm:flex-row justify-between">
