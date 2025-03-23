@@ -1,29 +1,26 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useOrder } from '@/lib/context';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
-  ArrowLeft,
-  ArrowRight,
-  Home,
-  Building,
-  Trees,
-  Building2,
-  AlertCircle,
-  Info,
-} from 'lucide-react';
-import { cn } from '@/lib/utils';
-import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
-  DialogFooter,
 } from '@/components/ui/dialog';
+import { useOrder } from '@/lib/context';
+import { cn } from '@/lib/utils';
+import {
+  ArrowLeft,
+  ArrowRight,
+  Building,
+  Building2,
+  Home,
+  Trees,
+} from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 interface WasteType {
   id: string;
@@ -130,7 +127,7 @@ function HeavyWasteDialog({
   initialSelected?: string[];
 }) {
   const [selectedTypes, setSelectedTypes] = useState<string[]>(initialSelected);
-  
+
   useEffect(() => {
     setSelectedTypes(initialSelected);
   }, [initialSelected]);
@@ -153,19 +150,15 @@ function HeavyWasteDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogHeader>
-        <DialogTitle>Heavy Waste Types</DialogTitle>
-      </DialogHeader>
-      <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto p-0 bg-background border-border">
-        <div className="p-6 pb-4 border-b border-border">
-          <h2 className="text-2xl font-medium text-foreground mb-2">Heavy Waste Types</h2>
-          <p className="text-muted-foreground">
+      <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto bg-background border-border">
+        <DialogHeader>
+          <DialogTitle>Heavy Waste Types</DialogTitle>
+          <DialogDescription>
             Heavy waste types have specific requirements and restrictions. Some
             skip sizes may not be available for heavy waste disposal.
-          </p>
-        </div>
-        
-        <div className="p-6">
+          </DialogDescription>
+        </DialogHeader>
+        <div className="">
           <div className="bg-amber-50 border border-amber-300 rounded-md mb-6">
             <div className="flex items-start gap-3 p-4">
               <div className="mt-1">
@@ -187,16 +180,21 @@ function HeavyWasteDialog({
                 </svg>
               </div>
               <div>
-                <h3 className="font-semibold text-amber-800 text-lg">Important Notice</h3>
+                <h3 className="font-semibold text-amber-800 text-lg">
+                  Important Notice
+                </h3>
                 <p className="text-amber-700 mt-1">
-                  Heavy waste types have specific requirements and restrictions. Some skip sizes may not be available for heavy waste disposal.
+                  Heavy waste types have specific requirements and restrictions.
+                  Some skip sizes may not be available for heavy waste disposal.
                 </p>
               </div>
             </div>
           </div>
 
-          <p className="text-foreground mb-4 text-lg">Please select any heavy waste types you need to dispose of:</p>
-          
+          <p className="text-foreground mb-4 text-lg">
+            Please select any heavy waste types you need to dispose of:
+          </p>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
             {heavyWasteTypes.map((type) => (
               <div
@@ -231,15 +229,15 @@ function HeavyWasteDialog({
           <div className="bg-blue-900/20 border border-blue-800/50 rounded-md mb-6">
             <div className="flex items-start gap-3 p-4">
               <div className="mt-1">
-                <svg 
-                  xmlns="http://www.w3.org/2000/svg" 
-                  width="24" 
-                  height="24" 
-                  viewBox="0 0 24 24" 
-                  fill="none" 
-                  stroke="currentColor" 
-                  strokeWidth="2" 
-                  strokeLinecap="round" 
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
                   strokeLinejoin="round"
                   className="text-blue-400"
                 >
@@ -249,10 +247,13 @@ function HeavyWasteDialog({
                 </svg>
               </div>
               <div>
-                <h3 className="font-semibold text-blue-300 text-lg">Skip Size Restrictions</h3>
+                <h3 className="font-semibold text-blue-300 text-lg">
+                  Skip Size Restrictions
+                </h3>
                 <p className="text-blue-200 mt-1">
-                  For safety reasons, heavy waste can only be disposed of in skips up to 8
-                  yards. Larger skips will not be available if heavy waste is selected.
+                  For safety reasons, heavy waste can only be disposed of in
+                  skips up to 8 yards. Larger skips will not be available if
+                  heavy waste is selected.
                 </p>
               </div>
             </div>
@@ -260,14 +261,14 @@ function HeavyWasteDialog({
         </div>
 
         <div className="flex justify-end gap-3 p-6 pt-2 border-t border-border bg-background">
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             onClick={() => onOpenChange(false)}
             className="border-border hover:bg-accent text-foreground"
           >
             Cancel
           </Button>
-          <Button 
+          <Button
             onClick={handleConfirm}
             className="bg-primary hover:bg-primary/90 text-primary-foreground"
           >
@@ -280,7 +281,8 @@ function HeavyWasteDialog({
 }
 
 export function WasteTypeSelection() {
-  const { state, updateWasteType, updateHeavyWasteTypes, prevStep, nextStep } = useOrder();
+  const { state, updateWasteType, updateHeavyWasteTypes, prevStep, nextStep } =
+    useOrder();
   const [selectedTypes, setSelectedTypes] = useState<string[]>(state.wasteType);
   const [showHeavyWasteDialog, setShowHeavyWasteDialog] = useState(false);
   const [selectedHeavyTypes, setSelectedHeavyTypes] = useState<string[]>(
@@ -289,14 +291,17 @@ export function WasteTypeSelection() {
 
   const needsHeavyWasteSelection = () => {
     return (
-      selectedTypes.includes('construction') || 
-      selectedTypes.includes('garden')
+      selectedTypes.includes('construction') || selectedTypes.includes('garden')
     );
   };
 
   useEffect(() => {
     // Check if we need to show heavy waste dialog when waste types change
-    if (needsHeavyWasteSelection() && !showHeavyWasteDialog && selectedHeavyTypes.length === 0) {
+    if (
+      needsHeavyWasteSelection() &&
+      !showHeavyWasteDialog &&
+      selectedHeavyTypes.length === 0
+    ) {
       setShowHeavyWasteDialog(true);
     }
   }, [selectedTypes]);
@@ -307,7 +312,7 @@ export function WasteTypeSelection() {
       const newTypes = isSelected
         ? prev.filter((id) => id !== typeId)
         : [...prev, typeId];
-      
+
       return newTypes;
     });
   };
@@ -320,7 +325,7 @@ export function WasteTypeSelection() {
   const handleSubmit = () => {
     // First update the regular waste types
     updateWasteType(selectedTypes);
-    
+
     // Then update heavy waste types if any were selected
     if (selectedHeavyTypes.length > 0) {
       updateHeavyWasteTypes(selectedHeavyTypes);
@@ -330,7 +335,7 @@ export function WasteTypeSelection() {
       setShowHeavyWasteDialog(true);
       return; // Don't proceed until heavy waste selection is done
     }
-    
+
     nextStep();
   };
 
@@ -444,8 +449,8 @@ export function WasteTypeSelection() {
         <div className="mb-8">
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-lg font-medium">Selected Heavy Waste Types</h2>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               size="sm"
               onClick={() => setShowHeavyWasteDialog(true)}
             >
@@ -457,7 +462,10 @@ export function WasteTypeSelection() {
               {selectedHeavyTypes.map((typeId) => {
                 const type = heavyWasteTypes.find((t) => t.id === typeId);
                 return type ? (
-                  <div key={typeId} className="bg-background rounded px-3 py-2 text-sm">
+                  <div
+                    key={typeId}
+                    className="bg-background rounded px-3 py-2 text-sm"
+                  >
                     {type.name}
                   </div>
                 ) : null;
