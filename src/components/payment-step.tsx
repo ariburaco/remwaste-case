@@ -69,8 +69,8 @@ export function PaymentStep() {
                   <MapPin className="text-primary mt-1" size={20} />
                   <div>
                     <h3 className="font-bold text-base mb-1">Delivery Address</h3>
-                    <p className="text-foreground">{state.address}</p>
-                    <p className="text-muted-foreground">{state.postcode}</p>
+                    <p className="text-foreground">{state.address || "197 Ashby Road, Hinckley"}</p>
+                    <p className="text-muted-foreground">{state.postcode || "LE10 1SH"}</p>
                   </div>
                 </div>
               </div>
@@ -186,10 +186,10 @@ export function PaymentStep() {
                         required
                       />
                       <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                        <svg width="28" height="20" viewBox="0 0 28 20" className="h-5 w-auto">
-                          <rect width="28" height="20" rx="4" fill="#016FD0" />
-                          <path d="M14.5 6H11V14H14.5V6Z" fill="white" />
-                          <path d="M11.7 10C11.7 8.8 12.4 7.9 14.3 7.9C15.1 7.9 15.7 8.1 16.2 8.3L15.8 9.7C15.4 9.5 14.9 9.3 14.3 9.3C13.6 9.3 13.5 9.7 13.5 9.9C13.5 10.6 15.2 10.6 15.2 12.3C15.2 13.6 14.3 14.1 13.1 14.1C12.3 14.1 11.6 13.9 11 13.6L11.4 12.2C12 12.5 12.7 12.7 13.2 12.7C13.7 12.7 14 12.5 14 12.1C14 11.3 11.7 11.5 11.7 10Z" fill="white" />
+                        <svg width="34" height="24" viewBox="0 0 34 24" className="h-5 w-auto">
+                          <rect width="34" height="24" rx="3" fill="#016FD0" />
+                          <path d="M20.4 5H13.2V13H20.4V5Z" fill="white" />
+                          <path d="M14 9C14 7.9 14.8 7 16.8 7C17.6 7 18.3 7.2 18.8 7.5L18.4 8.9C17.9 8.7 17.4 8.5 16.8 8.5C16.1 8.5 16 8.9 16 9.1C16 9.8 17.8 9.8 17.8 11.6C17.8 13 16.8 13.5 15.5 13.5C14.6 13.5 13.9 13.3 13.3 13L13.7 11.5C14.3 11.9 15.1 12.1 15.6 12.1C16.1 12.1 16.4 11.9 16.4 11.5C16.4 10.7 14 10.8 14 9Z" fill="white" />
                         </svg>
                       </div>
                     </div>
@@ -218,9 +218,10 @@ export function PaymentStep() {
                           maxLength={3}
                         />
                         <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground h-5 w-5">
-                            <rect width="20" height="14" x="2" y="5" rx="2" />
-                            <line x1="2" x2="22" y1="10" y2="10" />
+                          <svg width="32" height="20" viewBox="0 0 32 20" className="text-muted-foreground h-5 w-auto">
+                            <rect width="32" height="20" rx="3" fill="currentColor" fillOpacity="0.1" />
+                            <path d="M21 5H11V15H21V5Z" fill="currentColor" fillOpacity="0.5" />
+                            <line x1="7" x2="25" y1="10" y2="10" stroke="currentColor" strokeOpacity="0.5" strokeWidth="2" />
                           </svg>
                         </div>
                       </div>
@@ -234,6 +235,7 @@ export function PaymentStep() {
                         <SelectValue placeholder="Select country" />
                       </SelectTrigger>
                       <SelectContent>
+                        <SelectItem value="Türkiye">Türkiye</SelectItem>
                         <SelectItem value="United Kingdom">United Kingdom</SelectItem>
                         <SelectItem value="United States">United States</SelectItem>
                         <SelectItem value="Canada">Canada</SelectItem>

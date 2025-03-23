@@ -29,10 +29,8 @@ export function AddressSearch() {
   const inputRef = useRef<HTMLInputElement>(null);
   const inputContainerRef = useRef<HTMLDivElement>(null);
 
-  // Debounce the search query
   const debouncedQuery = useDebounce(query, 300);
 
-  // Use React Query for address search
   const { data, isLoading } = useQuery({
     queryKey: ['addresses', debouncedQuery],
     queryFn: () => searchAddress(debouncedQuery),
@@ -41,7 +39,6 @@ export function AddressSearch() {
 
   const results = data?.Items || [];
 
-  // Handle clicks outside of the results dropdown
   const handleClickOutside = (event: MouseEvent) => {
     if (
       resultsRef.current &&
@@ -53,7 +50,6 @@ export function AddressSearch() {
     }
   };
 
-  // Add and remove event listener
   useEffect(() => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
@@ -64,15 +60,12 @@ export function AddressSearch() {
     setFocused(false);
     setQuery(address.Text);
 
-    // Extract postcode from the description
     const postcodeParts = address.Description.split(' ');
     const postcode = postcodeParts.slice(-2).join(' ');
 
-    // Update the state
     updatePostcode(postcode);
     updateAddress(`${address.Text}, ${address.Description}`);
 
-    // Populate the form fields
     const streetParts = address.Text.split(' ');
     const houseNumber = streetParts[0];
     const street = streetParts.slice(1).join(' ');
@@ -164,7 +157,6 @@ export function AddressSearch() {
             </AnimatePresence>
           </div>
 
-          {/* Dropdown results */}
           <AnimatePresence>
             {showResults && (
               <motion.div
@@ -293,12 +285,7 @@ export function AddressSearch() {
           <Button
             type="submit"
             disabled={!selectedAddress}
-            className={cn(
-              'w-full transition-all duration-300 h-12 text-base',
-              !selectedAddress
-                ? 'bg-muted text-muted-foreground'
-                : 'bg-primary text-primary-foreground'
-            )}
+            className={cn('w-full transition-all duration-300')}
           >
             <motion.span
               initial={false}

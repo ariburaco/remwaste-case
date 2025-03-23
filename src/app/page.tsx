@@ -9,36 +9,13 @@ import { PostcodeStep } from '@/components/postcode-step';
 import { SkipSelection } from '@/components/skip-selection';
 import { WasteTypeSelection } from '@/components/waste-type-selection';
 import { useOrder } from '@/lib/context';
-import { AlertTriangle } from 'lucide-react';
-
-// This would be replaced by actual step components in a full implementation
-const StepPlaceholder = ({ title }: { title: string }) => (
-  <div className="w-full max-w-6xl mx-auto px-4">
-    <h1 className="text-3xl font-bold text-center md:text-left mb-8 text-foreground">
-      {title}
-    </h1>
-    <div className="bg-card p-12 rounded-xl text-center border border-border">
-      <div className="flex justify-center mb-4">
-        <AlertTriangle size={40} className="text-primary/60" />
-      </div>
-      <p className="text-muted-foreground">
-        This is a placeholder for the {title.toLowerCase()} step.
-      </p>
-      <p className="mt-4 text-sm text-muted-foreground">
-        For this case study, only the first five steps are fully implemented.
-      </p>
-    </div>
-  </div>
-);
 
 export default function Home() {
   const { state } = useOrder();
 
-  // Note: For a real application, we would remove this and allow natural progression through steps
-
   return (
     <main className="min-h-screen flex flex-col">
-      <header className="bg-secondary pt-10 pb-6 border-b border-border">
+      <header className="bg-background pt-10 pb-6">
         <Logo className="mb-10" />
         <NavSteps />
       </header>

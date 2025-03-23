@@ -138,7 +138,7 @@ export function DateSelection() {
       {/* Quick select dates for mobile */}
       <div className="md:hidden mb-8">
         <p className="text-sm text-muted-foreground mb-3">Quick select:</p>
-        <div className="flex overflow-x-auto pb-2 gap-2">
+        <div className="flex flex-wrap gap-4">
           {availableDates.map((date, index) => (
             <Button
               key={date.toISOString()}
@@ -161,10 +161,8 @@ export function DateSelection() {
         </div>
       </div>
 
-      {/* Main layout for date selection */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Calendar - takes 2/3 of the space */}
-        <Card className="md:col-span-1 p-5 border-border bg-card shadow-sm self-center">
+        <Card className="p-5 border-border bg-card shadow-sm">
           <div className="text-center mb-4 md:hidden">
             <h2 className="text-lg font-bold">
               {format(new Date(), 'MMMM yyyy')}
@@ -187,44 +185,44 @@ export function DateSelection() {
               quickSelect: (date) => isQuickSelectDate(date),
             }}
             modifiersClassNames={{
-              available: "border border-primary/20",
-              quickSelect: "border-2 border-primary font-bold",
+              available: 'border border-primary/20',
+              quickSelect: 'border-2 border-primary font-bold',
             }}
             className="w-full [&_.rdp-day]:h-12 [&_.rdp-day]:w-12 [&_.rdp-day]:text-base [&_.rdp-caption]:text-lg [&_.rdp-head_button]:text-sm"
             classNames={{
-              months: "flex flex-col sm:flex-row gap-4",
-              month: "flex flex-col gap-4 space-y-2",
-              caption: "flex justify-center pt-2 pb-2 relative items-center w-full",
-              caption_label: "text-lg font-semibold",
-              nav: "flex items-center gap-1",
+              months: 'flex flex-col gap-4',
+              month: 'flex flex-col gap-4 space-y-2',
+              caption:
+                'flex justify-center pt-2 pb-2 relative items-center w-full',
+              caption_label: 'text-lg font-semibold',
+              nav: 'flex items-center gap-1',
               nav_button: cn(
-                "h-9 w-9 bg-transparent p-0 opacity-50 hover:opacity-100"
+                'h-9 w-9 bg-transparent p-0 opacity-50 hover:opacity-100'
               ),
-              nav_button_previous: "absolute left-1",
-              nav_button_next: "absolute right-1",
-              table: "w-full border-collapse",
-              head_row: "flex justify-between w-full",
-              head_cell: "text-muted-foreground font-medium w-12 text-sm",
-              row: "flex w-full mt-3 justify-between",
+              nav_button_previous: 'absolute left-1',
+              nav_button_next: 'absolute right-1',
+              table: 'w-full border-collapse',
+              head_row: 'flex justify-between w-full',
+              head_cell: 'text-muted-foreground font-medium w-12 text-sm',
+              row: 'flex w-full mt-3 justify-between',
               cell: cn(
-                "relative p-0 text-center text-base justify-center items-center flex",
-                "[&:has([aria-selected])]:bg-accent"
+                'relative p-0 text-center text-base justify-center items-center flex',
+                '[&:has([aria-selected])]:bg-accent'
               ),
               day: cn(
-                "h-12 w-12 p-0 font-normal aria-selected:opacity-100 hover:bg-accent rounded-md"
+                'h-12 w-12 p-0 font-normal aria-selected:opacity-100 hover:bg-accent rounded-md'
               ),
               day_selected:
-                "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
-              day_today: "bg-accent text-accent-foreground",
-              day_outside: "text-muted-foreground opacity-50",
-              day_disabled: "text-muted-foreground opacity-50",
-              day_hidden: "invisible",
+                'bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground',
+              day_today: 'bg-accent text-accent-foreground',
+              day_outside: 'text-muted-foreground opacity-50',
+              day_disabled: 'text-muted-foreground opacity-50',
+              day_hidden: 'invisible',
             }}
           />
         </Card>
 
-        {/* Selected date info panel - takes 1/3 of the space */}
-        <div className="md:col-span-1">
+        <div className="">
           <AnimatePresence mode="wait">
             {selectedDate ? (
               <motion.div
@@ -253,24 +251,22 @@ export function DateSelection() {
 
                   <div className="space-y-5 text-sm">
                     <div className="flex items-start gap-3 bg-accent/50 p-3 rounded-md">
-                      <Clock
-                        className="text-primary mt-0.5"
-                        size={20}
-                      />
+                      <Clock className="text-primary mt-0.5" size={20} />
                       <div>
-                        <p className="text-foreground font-medium">Delivery window</p>
+                        <p className="text-foreground font-medium">
+                          Delivery window
+                        </p>
                         <p className="text-muted-foreground">
                           We'll deliver your skip between 7am and 6pm
                         </p>
                       </div>
                     </div>
                     <div className="flex items-start gap-3 bg-accent/50 p-3 rounded-md">
-                      <Truck
-                        className="text-primary mt-0.5"
-                        size={20}
-                      />
+                      <Truck className="text-primary mt-0.5" size={20} />
                       <div>
-                        <p className="text-foreground font-medium">Delivery notification</p>
+                        <p className="text-foreground font-medium">
+                          Delivery notification
+                        </p>
                         <p className="text-muted-foreground">
                           Our delivery team will call you 30 minutes before
                           arrival
