@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useOrder } from '@/lib/context';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -12,8 +12,18 @@ import {
   Building,
   Trees,
   Building2,
+  AlertCircle,
+  Info,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from '@/components/ui/dialog';
 
 interface WasteType {
   id: string;
@@ -64,13 +74,66 @@ const wasteTypes: WasteType[] = [
   },
 ];
 
-export function WasteTypeSelection() {
-  const { state, updateWasteType, prevStep, nextStep } = useOrder();
-  const [selectedTypes, setSelectedTypes] = useState<string[]>(state.wasteType);
-  const [specialItems, setSpecialItems] = useState({
-    plasterboard: false,
-    heavyMaterials: false,
-  });
+interface HeavyWasteType {
+  id: string;
+  name: string;
+  description: string;
+}
+
+const heavyWasteTypes: HeavyWasteType[] = [
+  {
+    id: 'soil',
+    name: 'Soil',
+    description: 'Including topsoil and subsoil',
+  },
+  {
+    id: 'concrete',
+    name: 'Concrete',
+    description: 'Blocks, slabs, and foundations',
+  },
+  {
+    id: 'bricks',
+    name: 'Bricks',
+    description: 'Whole or broken bricks',
+  },
+  {
+    id: 'tiles',
+    name: 'Tiles',
+    description: 'Ceramic, porcelain, or stone tiles',
+  },
+  {
+    id: 'sand',
+    name: 'Sand',
+    description: 'Building or garden sand',
+  },
+  {
+    id: 'gravel',
+    name: 'Gravel',
+    description: 'Stone and aggregate',
+  },
+  {
+    id: 'rubble',
+    name: 'Rubble',
+    description: 'Mixed construction debris',
+  },
+];
+
+function HeavyWasteDialog({
+  open,
+  onOpenChange,
+  onConfirm,
+  initialSelected = [],
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onConfirm: (selectedTypes: string[]) => void;
+  initialSelected?: string[];
+}) {
+  const [selectedTypes, setSelectedTypes] = useState<string[]>(initialSelected);
+  
+  useEffect(() => {
+    setSelectedTypes(initialSelected);
+  }, [initialSelected]);
 
   const handleTypeSelect = (typeId: string) => {
     setSelectedTypes((prev) => {
@@ -83,15 +146,191 @@ export function WasteTypeSelection() {
     });
   };
 
-  const handleSpecialItemChange = (item: keyof typeof specialItems) => {
-    setSpecialItems((prev) => ({
-      ...prev,
-      [item]: !prev[item],
-    }));
+  const handleConfirm = () => {
+    onConfirm(selectedTypes);
+    onOpenChange(false);
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogHeader>
+        <DialogTitle>Heavy Waste Types</DialogTitle>
+      </DialogHeader>
+      <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto p-0 bg-background border-border">
+        <div className="p-6 pb-4 border-b border-border">
+          <h2 className="text-2xl font-medium text-foreground mb-2">Heavy Waste Types</h2>
+          <p className="text-muted-foreground">
+            Heavy waste types have specific requirements and restrictions. Some
+            skip sizes may not be available for heavy waste disposal.
+          </p>
+        </div>
+        
+        <div className="p-6">
+          <div className="bg-amber-50 border border-amber-300 rounded-md mb-6">
+            <div className="flex items-start gap-3 p-4">
+              <div className="mt-1">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="text-amber-500"
+                >
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="12" y1="8" x2="12" y2="12" />
+                  <line x1="12" y1="16" x2="12.01" y2="16" />
+                </svg>
+              </div>
+              <div>
+                <h3 className="font-semibold text-amber-800 text-lg">Important Notice</h3>
+                <p className="text-amber-700 mt-1">
+                  Heavy waste types have specific requirements and restrictions. Some skip sizes may not be available for heavy waste disposal.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <p className="text-foreground mb-4 text-lg">Please select any heavy waste types you need to dispose of:</p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            {heavyWasteTypes.map((type) => (
+              <div
+                key={type.id}
+                className={cn(
+                  'border rounded-md p-4 flex items-start gap-3 cursor-pointer transition-all',
+                  selectedTypes.includes(type.id)
+                    ? 'border-primary bg-primary/5'
+                    : 'border-border hover:border-muted-foreground/50'
+                )}
+                onClick={() => handleTypeSelect(type.id)}
+              >
+                <Checkbox
+                  id={`heavy-${type.id}`}
+                  checked={selectedTypes.includes(type.id)}
+                  onCheckedChange={() => handleTypeSelect(type.id)}
+                  className="mt-1.5 border-primary"
+                />
+                <div>
+                  <label
+                    htmlFor={`heavy-${type.id}`}
+                    className="font-medium cursor-pointer text-foreground text-lg"
+                  >
+                    {type.name}
+                  </label>
+                  <p className="text-muted-foreground">{type.description}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="bg-blue-900/20 border border-blue-800/50 rounded-md mb-6">
+            <div className="flex items-start gap-3 p-4">
+              <div className="mt-1">
+                <svg 
+                  xmlns="http://www.w3.org/2000/svg" 
+                  width="24" 
+                  height="24" 
+                  viewBox="0 0 24 24" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  strokeWidth="2" 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round"
+                  className="text-blue-400"
+                >
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="12" y1="16" x2="12" y2="12"></line>
+                  <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                </svg>
+              </div>
+              <div>
+                <h3 className="font-semibold text-blue-300 text-lg">Skip Size Restrictions</h3>
+                <p className="text-blue-200 mt-1">
+                  For safety reasons, heavy waste can only be disposed of in skips up to 8
+                  yards. Larger skips will not be available if heavy waste is selected.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex justify-end gap-3 p-6 pt-2 border-t border-border bg-background">
+          <Button 
+            variant="outline" 
+            onClick={() => onOpenChange(false)}
+            className="border-border hover:bg-accent text-foreground"
+          >
+            Cancel
+          </Button>
+          <Button 
+            onClick={handleConfirm}
+            className="bg-primary hover:bg-primary/90 text-primary-foreground"
+          >
+            Continue
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+export function WasteTypeSelection() {
+  const { state, updateWasteType, updateHeavyWasteTypes, prevStep, nextStep } = useOrder();
+  const [selectedTypes, setSelectedTypes] = useState<string[]>(state.wasteType);
+  const [showHeavyWasteDialog, setShowHeavyWasteDialog] = useState(false);
+  const [selectedHeavyTypes, setSelectedHeavyTypes] = useState<string[]>(
+    state.heavyWasteTypes || []
+  );
+
+  const needsHeavyWasteSelection = () => {
+    return (
+      selectedTypes.includes('construction') || 
+      selectedTypes.includes('garden')
+    );
+  };
+
+  useEffect(() => {
+    // Check if we need to show heavy waste dialog when waste types change
+    if (needsHeavyWasteSelection() && !showHeavyWasteDialog && selectedHeavyTypes.length === 0) {
+      setShowHeavyWasteDialog(true);
+    }
+  }, [selectedTypes]);
+
+  const handleTypeSelect = (typeId: string) => {
+    setSelectedTypes((prev) => {
+      const isSelected = prev.includes(typeId);
+      const newTypes = isSelected
+        ? prev.filter((id) => id !== typeId)
+        : [...prev, typeId];
+      
+      return newTypes;
+    });
+  };
+
+  const handleHeavyWasteConfirm = (types: string[]) => {
+    setSelectedHeavyTypes(types);
+    setShowHeavyWasteDialog(false);
   };
 
   const handleSubmit = () => {
+    // First update the regular waste types
     updateWasteType(selectedTypes);
+    
+    // Then update heavy waste types if any were selected
+    if (selectedHeavyTypes.length > 0) {
+      updateHeavyWasteTypes(selectedHeavyTypes);
+    } else if (needsHeavyWasteSelection()) {
+      // If user hasn't selected heavy waste types but they should have,
+      // show the dialog before proceeding
+      setShowHeavyWasteDialog(true);
+      return; // Don't proceed until heavy waste selection is done
+    }
+    
     nextStep();
   };
 
@@ -201,6 +440,33 @@ export function WasteTypeSelection() {
         ))}
       </div>
 
+      {needsHeavyWasteSelection() && selectedHeavyTypes.length > 0 && (
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-lg font-medium">Selected Heavy Waste Types</h2>
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => setShowHeavyWasteDialog(true)}
+            >
+              Edit
+            </Button>
+          </div>
+          <div className="bg-card border border-border rounded-lg p-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+              {selectedHeavyTypes.map((typeId) => {
+                const type = heavyWasteTypes.find((t) => t.id === typeId);
+                return type ? (
+                  <div key={typeId} className="bg-background rounded px-3 py-2 text-sm">
+                    {type.name}
+                  </div>
+                ) : null;
+              })}
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="max-md:fixed w-full max-md:bottom-0 max-md:border-t flex justify-between max-md:gap-4 max-md:p-4 max-md:left-0 max-md:right-0 max-md:z-10 max-md:bg-background max-md:shadow-sm">
         <Button
           onClick={prevStep}
@@ -220,6 +486,13 @@ export function WasteTypeSelection() {
           <ArrowRight size={18} className="ml-2" />
         </Button>
       </div>
+
+      <HeavyWasteDialog
+        open={showHeavyWasteDialog}
+        onOpenChange={setShowHeavyWasteDialog}
+        onConfirm={handleHeavyWasteConfirm}
+        initialSelected={selectedHeavyTypes}
+      />
     </div>
   );
 }

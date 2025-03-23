@@ -8,6 +8,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 interface OrderState {
   postcode: string;
   wasteType: string[];
+  heavyWasteTypes: string[];
   selectedSkip: Skip | null;
   permitRequired: boolean;
   date: Date | null;
@@ -21,6 +22,7 @@ interface OrderContextType {
   state: OrderState;
   updatePostcode: (postcode: string) => void;
   updateWasteType: (types: string[]) => void;
+  updateHeavyWasteTypes: (types: string[]) => void;
   selectSkip: (skip: Skip) => void;
   updatePermit: (required: boolean) => void;
   updateDate: (date: Date) => void;
@@ -48,6 +50,7 @@ export function OrderProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<OrderState>({
     postcode: '',
     wasteType: [],
+    heavyWasteTypes: [],
     selectedSkip: null,
     permitRequired: false,
     date: null,
@@ -63,6 +66,10 @@ export function OrderProvider({ children }: { children: ReactNode }) {
 
   const updateWasteType = (types: string[]) => {
     setState((prev) => ({ ...prev, wasteType: types }));
+  };
+
+  const updateHeavyWasteTypes = (types: string[]) => {
+    setState((prev) => ({ ...prev, heavyWasteTypes: types }));
   };
 
   const selectSkip = (skip: Skip) => {
@@ -112,6 +119,7 @@ export function OrderProvider({ children }: { children: ReactNode }) {
           state,
           updatePostcode,
           updateWasteType,
+          updateHeavyWasteTypes,
           selectSkip,
           updatePermit,
           updateDate,
