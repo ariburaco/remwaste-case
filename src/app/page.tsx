@@ -15,7 +15,7 @@ export default function Home() {
 
   return (
     <main className="min-h-screen flex flex-col">
-      <header className="bg-background pt-10 pb-6">
+      <header className="bg-secondary pt-10 pb-6">
         <Logo className="mb-10" />
         <NavSteps />
       </header>

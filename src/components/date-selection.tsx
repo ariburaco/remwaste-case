@@ -135,7 +135,6 @@ export function DateSelection() {
         </div>
       )}
 
-      {/* Quick select dates for mobile */}
       <div className="md:hidden mb-8">
         <p className="text-sm text-muted-foreground mb-3">Quick select:</p>
         <div className="flex flex-wrap gap-4">
@@ -303,7 +302,7 @@ export function DateSelection() {
       </div>
 
       {/* Navigation buttons */}
-      <div className="flex justify-between mt-8">
+      <div className="max-md:fixed w-full max-md:bottom-0 max-md:border-t flex justify-between max-md:gap-4 max-md:p-4 max-md:left-0 max-md:right-0 max-md:z-10 max-md:bg-background max-md:shadow-sm">
         <Button
           onClick={prevStep}
           variant="outline"

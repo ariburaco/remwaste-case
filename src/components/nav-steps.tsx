@@ -70,19 +70,17 @@ export function NavSteps() {
   return (
     <nav className="w-full overflow-x-auto py-6 sticky top-0 z-10 shadow-sm">
       <div className="w-full flex justify-center">
-        <div className="flex items-start relative px-4 md:px-0 space-x-6 sm:space-x-10 md:space-x-14 lg:space-x-20">
-          {/* Progress Bar - Positioned precisely to align with the icon centers */}
+        <div className="flex items-start relative px-4 md:px-0 space-x-4 sm:space-x-10 md:space-x-14 lg:space-x-20">
           <div
             className="absolute top-6 h-2"
             style={{
-              left: 25, // Adjusted for better alignment
+              left: 25,
               right: 25,
               zIndex: 0,
             }}
           >
-            <div className="h-full bg-gray-700/20 rounded-full" />
             <motion.div
-              className="absolute top-0 left-0 h-full bg-primary/90 rounded-full"
+              className="absolute top-[-4px] left-0 h-full bg-primary/90 rounded-full"
               style={{
                 width: `${
                   (Math.max(0, Math.min(6, currentStep - 1)) /
@@ -179,12 +177,13 @@ export function NavSteps() {
                           }
                         />
                       )}
+                      <div className="absolute z-[-1] h-12 bg-secondary rounded-full" />
                     </motion.div>
                   </div>
 
                   <motion.span
                     className={cn(
-                      'text-sm font-medium text-center w-full transition-colors',
+                      'text-[10px] md:text-sm font-medium text-center w-full transition-colors',
                       isActive
                         ? 'text-foreground'
                         : isPending

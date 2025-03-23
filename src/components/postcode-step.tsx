@@ -6,10 +6,10 @@ export function PostcodeStep() {
   return (
     <div className="w-full max-w-6xl mx-auto px-4 pb-16">
       <header className="mb-8">
-        <h1 className="text-3xl font-bold text-center md:text-left text-foreground">
+        <h1 className="text-3xl font-bold text-center text-foreground">
           Enter your postcode
         </h1>
-        <p className="text-muted-foreground mt-2 text-center md:text-left">
+        <p className="text-muted-foreground mt-2 text-center">
           We'll show you available skip options in your area.
         </p>
       </header>

@@ -282,29 +282,31 @@ export function SkipSelection() {
                   className="fixed bottom-0 left-0 right-0 border-t bg-background shadow-lg p-4 z-50"
                 >
                   <div className="w-full max-w-6xl mx-auto">
-                    <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                    <div className="flex flex-row items-center justify-between gap-4">
                       <div className="flex items-center space-x-4">
                         <div className="w-16 h-16 relative">
                           <SkipVisualization size={selectedSkip.size} />
                         </div>
                         <div>
-                          <h3 className="text-xl font-bold text-foreground">
+                          <h3 className="text-base md:text-xl font-bold text-foreground">
                             {selectedSkip.size} Yard Skip
                           </h3>
-                          <p className="text-muted-foreground text-sm">
+                          <p className="text-xs md:text-sm text-muted-foreground">
                             {selectedSkip.hire_period_days} day hire • {formatCurrency(selectedSkip.price_before_vat, 'GBP')}
                           </p>
                         </div>
                       </div>
-                      <div className="flex space-x-3">
+                      <div className="flex flex-col md:flex-row gap-2">
                         <Button 
                           variant="outline" 
+                          size="sm"
                           onClick={handleCancelPreview}
                           className="border-border hover:bg-accent"
                         >
                           Cancel
                         </Button>
                         <Button 
+                          size="sm"
                           onClick={handleConfirm}
                           className="bg-primary text-primary-foreground hover:bg-primary/90"
                         >

@@ -201,7 +201,7 @@ export function WasteTypeSelection() {
         ))}
       </div>
 
-      <div className="flex flex-col gap-4 sm:flex-row justify-between">
+      <div className="max-md:fixed w-full max-md:bottom-0 max-md:border-t flex justify-between max-md:gap-4 max-md:p-4 max-md:left-0 max-md:right-0 max-md:z-10 max-md:bg-background max-md:shadow-sm">
         <Button
           onClick={prevStep}
           variant="outline"

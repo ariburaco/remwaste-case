@@ -5,17 +5,29 @@ import { Card } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { SkipVisualization } from '@/components/skip-visualization';
 import { useOrder } from '@/lib/context';
 import { cn, formatCurrency } from '@/lib/utils';
 import { addDays, format } from 'date-fns';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowLeft, CalendarDays, CreditCard, MapPin, Sparkles } from 'lucide-react';
+import {
+  ArrowLeft,
+  CalendarDays,
+  CreditCard,
+  MapPin,
+  Sparkles,
+} from 'lucide-react';
 import { useState } from 'react';
 
 export function PaymentStep() {
-  const { state, prevStep } = useOrder();
+  const { state, prevStep, nextStep } = useOrder();
   const [cardNumber, setCardNumber] = useState('4242 4242 4242 4242');
   const [expiryDate, setExpiryDate] = useState('12/25');
   const [cvc, setCvc] = useState('123');
@@ -28,16 +40,16 @@ export function PaymentStep() {
   const collectionDate = state.date ? addDays(state.date, 14) : null;
 
   // Dummy values for calculation
-  const price = state.selectedSkip?.price_before_vat || 216.00;
+  const price = state.selectedSkip?.price_before_vat || 216.0;
   const vat = price * 0.2;
-  const permitFee = state.permitRequired ? 84.00 : 0;
+  const permitFee = state.permitRequired ? 84.0 : 0;
   const totalPrice = price + vat + permitFee;
 
   // Handle payment submission
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsProcessing(true);
-    
+
     // Simulate payment processing
     setTimeout(() => {
       setIsProcessing(false);
@@ -62,40 +74,56 @@ export function PaymentStep() {
             {/* Order Summary */}
             <Card className="p-6 border-border bg-card shadow-sm">
               <h2 className="text-2xl font-bold mb-6">Order Summary</h2>
-              
+
               {/* Delivery Address */}
               <div className="border-b border-border pb-4 mb-4">
                 <div className="flex items-start gap-3">
                   <MapPin className="text-primary mt-1" size={20} />
                   <div>
-                    <h3 className="font-bold text-base mb-1">Delivery Address</h3>
-                    <p className="text-foreground">{state.address || "197 Ashby Road, Hinckley"}</p>
-                    <p className="text-muted-foreground">{state.postcode || "LE10 1SH"}</p>
+                    <h3 className="font-bold text-base mb-1">
+                      Delivery Address
+                    </h3>
+                    <p className="text-foreground">
+                      {state.address || '197 Ashby Road, Hinckley'}
+                    </p>
+                    <p className="text-muted-foreground">
+                      {state.postcode || 'LE10 1SH'}
+                    </p>
                   </div>
                 </div>
               </div>
-              
+
               {/* Delivery & Collection */}
               <div className="border-b border-border pb-4 mb-4">
                 <div className="flex items-start gap-3">
                   <CalendarDays className="text-primary mt-1" size={20} />
                   <div>
-                    <h3 className="font-bold text-base mb-1">Delivery & Collection</h3>
+                    <h3 className="font-bold text-base mb-1">
+                      Delivery & Collection
+                    </h3>
                     <div className="grid grid-cols-3 gap-1">
-                      <p className="text-muted-foreground col-span-1">Delivery:</p>
-                      <p className="text-foreground col-span-2 font-medium">
-                        {state.date ? format(state.date, 'EEEE d MMMM yyyy') : 'Not selected'}
+                      <p className="text-muted-foreground col-span-1">
+                        Delivery:
                       </p>
-                      
-                      <p className="text-muted-foreground col-span-1">Collection:</p>
                       <p className="text-foreground col-span-2 font-medium">
-                        {collectionDate ? format(collectionDate, 'EEEE d MMMM yyyy') : 'Not selected'}
+                        {state.date
+                          ? format(state.date, 'EEEE d MMMM yyyy')
+                          : 'Not selected'}
+                      </p>
+
+                      <p className="text-muted-foreground col-span-1">
+                        Collection:
+                      </p>
+                      <p className="text-foreground col-span-2 font-medium">
+                        {collectionDate
+                          ? format(collectionDate, 'EEEE d MMMM yyyy')
+                          : 'Not selected'}
                       </p>
                     </div>
                   </div>
                 </div>
               </div>
-              
+
               {/* Skip Details */}
               {state.selectedSkip && (
                 <div className="border-b border-border pb-4 mb-4">
@@ -104,41 +132,52 @@ export function PaymentStep() {
                       <SkipVisualization size={state.selectedSkip.size} />
                     </div>
                     <div className="flex-1">
-                      <h3 className="font-bold text-lg">{state.selectedSkip.size} Yard Skip</h3>
+                      <h3 className="font-bold text-lg">
+                        {state.selectedSkip.size} Yard Skip
+                      </h3>
                       <p className="text-muted-foreground text-sm mb-1">
                         {state.selectedSkip.hire_period_days} day hire period
                       </p>
                       <p className="text-xl font-bold text-foreground mt-1">
-                        {formatCurrency(state.selectedSkip.price_before_vat, 'GBP')}
-                        <span className="text-xs ml-1 text-muted-foreground font-normal">+ VAT</span>
+                        {formatCurrency(
+                          state.selectedSkip.price_before_vat,
+                          'GBP'
+                        )}
+                        <span className="text-xs ml-1 text-muted-foreground font-normal">
+                          + VAT
+                        </span>
                       </p>
                     </div>
                   </div>
                 </div>
               )}
-              
+
               {/* Cost Breakdown */}
               <div className="space-y-2 mb-6">
                 <div className="flex justify-between">
                   <p className="text-muted-foreground">Subtotal (excl. VAT)</p>
                   <p className="text-foreground">{formatCurrency(price)}</p>
                 </div>
-                
+
                 {permitFee > 0 && (
                   <div className="flex justify-between">
                     <p className="text-muted-foreground">Permit fee</p>
-                    <p className="text-foreground">{formatCurrency(permitFee)}</p>
+                    <p className="text-foreground">
+                      {formatCurrency(permitFee)}
+                    </p>
                   </div>
                 )}
-                
+
                 <div className="flex justify-between">
                   <p className="text-muted-foreground">VAT (20%)</p>
                   <p className="text-foreground">{formatCurrency(vat)}</p>
                 </div>
-                
+
                 <div className="flex justify-between pt-3 border-t border-border mt-3">
                   <p className="text-foreground font-bold text-lg">Total</p>
-                  <p className="text-foreground font-bold text-lg">{formatCurrency(totalPrice)}</p>
+                  <p className="text-foreground font-bold text-lg">
+                    {formatCurrency(totalPrice)}
+                  </p>
                 </div>
               </div>
             </Card>
@@ -149,22 +188,24 @@ export function PaymentStep() {
                 <CreditCard className="text-primary mr-2" size={22} />
                 Payment Details
               </h2>
-              
+
               <form onSubmit={handleSubmit}>
                 {/* Payment Method */}
                 <div className="mb-6">
                   <div className="flex gap-4 mb-4">
-                    <div 
-                      className="flex-1 bg-primary text-primary-foreground rounded-lg p-4 flex items-center justify-center cursor-pointer"
-                    >
+                    <div className="flex-1 bg-primary text-primary-foreground rounded-lg p-4 flex items-center justify-center cursor-pointer">
                       <CreditCard className="mr-2" size={20} />
                       <span className="font-medium">Card</span>
                     </div>
-                    <div 
-                      className="flex-1 bg-card border border-border rounded-lg p-4 flex items-center justify-center cursor-pointer text-muted-foreground"
-                    >
-                      <svg width="24" height="24" viewBox="0 0 24 24" className="mr-2">
-                        <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 20C7.59 20 4 16.41 4 12C4 7.59 7.59 4 12 4C16.41 4 20 7.59 20 12C20 16.41 16.41 20 12 20ZM12 7C10.34 7 9 8.34 9 10H11C11 9.45 11.45 9 12 9C12.55 9 13 9.45 13 10C13 10.55 12.55 11 12 11C11.45 11 11 11.45 11 12V13H13V12.55C14.19 12.25 15 11.21 15 10C15 8.34 13.66 7 12 7ZM11 15V17H13V15H11Z" 
+                    <div className="flex-1 bg-card border border-border rounded-lg p-4 flex items-center justify-center cursor-pointer text-muted-foreground">
+                      <svg
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        className="mr-2"
+                      >
+                        <path
+                          d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 20C7.59 20 4 16.41 4 12C4 7.59 7.59 4 12 4C16.41 4 20 7.59 20 12C20 16.41 16.41 20 12 20ZM12 7C10.34 7 9 8.34 9 10H11C11 9.45 11.45 9 12 9C12.55 9 13 9.45 13 10C13 10.55 12.55 11 12 11C11.45 11 11 11.45 11 12V13H13V12.55C14.19 12.25 15 11.21 15 10C15 8.34 13.66 7 12 7ZM11 15V17H13V15H11Z"
                           fill="currentColor"
                         />
                       </svg>
@@ -172,7 +213,7 @@ export function PaymentStep() {
                     </div>
                   </div>
                 </div>
-                
+
                 {/* Card Details */}
                 <div className="space-y-4">
                   <div>
@@ -186,15 +227,23 @@ export function PaymentStep() {
                         required
                       />
                       <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                        <svg width="34" height="24" viewBox="0 0 34 24" className="h-5 w-auto">
+                        <svg
+                          width="34"
+                          height="24"
+                          viewBox="0 0 34 24"
+                          className="h-5 w-auto"
+                        >
                           <rect width="34" height="24" rx="3" fill="#016FD0" />
                           <path d="M20.4 5H13.2V13H20.4V5Z" fill="white" />
-                          <path d="M14 9C14 7.9 14.8 7 16.8 7C17.6 7 18.3 7.2 18.8 7.5L18.4 8.9C17.9 8.7 17.4 8.5 16.8 8.5C16.1 8.5 16 8.9 16 9.1C16 9.8 17.8 9.8 17.8 11.6C17.8 13 16.8 13.5 15.5 13.5C14.6 13.5 13.9 13.3 13.3 13L13.7 11.5C14.3 11.9 15.1 12.1 15.6 12.1C16.1 12.1 16.4 11.9 16.4 11.5C16.4 10.7 14 10.8 14 9Z" fill="white" />
+                          <path
+                            d="M14 9C14 7.9 14.8 7 16.8 7C17.6 7 18.3 7.2 18.8 7.5L18.4 8.9C17.9 8.7 17.4 8.5 16.8 8.5C16.1 8.5 16 8.9 16 9.1C16 9.8 17.8 9.8 17.8 11.6C17.8 13 16.8 13.5 15.5 13.5C14.6 13.5 13.9 13.3 13.3 13L13.7 11.5C14.3 11.9 15.1 12.1 15.6 12.1C16.1 12.1 16.4 11.9 16.4 11.5C16.4 10.7 14 10.8 14 9Z"
+                            fill="white"
+                          />
                         </svg>
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <Label htmlFor="expiryDate">Expiration date</Label>
@@ -218,16 +267,39 @@ export function PaymentStep() {
                           maxLength={3}
                         />
                         <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                          <svg width="32" height="20" viewBox="0 0 32 20" className="text-muted-foreground h-5 w-auto">
-                            <rect width="32" height="20" rx="3" fill="currentColor" fillOpacity="0.1" />
-                            <path d="M21 5H11V15H21V5Z" fill="currentColor" fillOpacity="0.5" />
-                            <line x1="7" x2="25" y1="10" y2="10" stroke="currentColor" strokeOpacity="0.5" strokeWidth="2" />
+                          <svg
+                            width="32"
+                            height="20"
+                            viewBox="0 0 32 20"
+                            className="text-muted-foreground h-5 w-auto"
+                          >
+                            <rect
+                              width="32"
+                              height="20"
+                              rx="3"
+                              fill="currentColor"
+                              fillOpacity="0.1"
+                            />
+                            <path
+                              d="M21 5H11V15H21V5Z"
+                              fill="currentColor"
+                              fillOpacity="0.5"
+                            />
+                            <line
+                              x1="7"
+                              x2="25"
+                              y1="10"
+                              y2="10"
+                              stroke="currentColor"
+                              strokeOpacity="0.5"
+                              strokeWidth="2"
+                            />
                           </svg>
                         </div>
                       </div>
                     </div>
                   </div>
-                  
+
                   <div>
                     <Label htmlFor="country">Country</Label>
                     <Select value={country} onValueChange={setCountry}>
@@ -236,46 +308,71 @@ export function PaymentStep() {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="Türkiye">Türkiye</SelectItem>
-                        <SelectItem value="United Kingdom">United Kingdom</SelectItem>
-                        <SelectItem value="United States">United States</SelectItem>
+                        <SelectItem value="United Kingdom">
+                          United Kingdom
+                        </SelectItem>
+                        <SelectItem value="United States">
+                          United States
+                        </SelectItem>
                         <SelectItem value="Canada">Canada</SelectItem>
                         <SelectItem value="France">France</SelectItem>
                         <SelectItem value="Germany">Germany</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
-                  
+
                   <div className="flex items-center space-x-2 mt-4">
-                    <Checkbox 
-                      id="saveCard" 
-                      checked={saveCard} 
-                      onCheckedChange={(checked) => setSaveCard(checked as boolean)} 
+                    <Checkbox
+                      id="saveCard"
+                      checked={saveCard}
+                      onCheckedChange={(checked) =>
+                        setSaveCard(checked as boolean)
+                      }
                     />
-                    <Label htmlFor="saveCard" className="text-sm cursor-pointer">
+                    <Label
+                      htmlFor="saveCard"
+                      className="text-sm cursor-pointer"
+                    >
                       Save this card as default payment method
                     </Label>
                   </div>
                 </div>
-                
+
                 <div className="mt-8">
-                  <Button 
-                    type="submit" 
+                  <Button
+                    type="submit"
                     className="w-full bg-primary text-primary-foreground hover:bg-primary/90 py-6 text-lg font-medium"
                     disabled={isProcessing}
                   >
                     {isProcessing ? (
                       <div className="flex items-center">
-                        <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        <svg
+                          className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                          ></circle>
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                          ></path>
                         </svg>
                         Processing...
                       </div>
                     ) : (
-                      "Complete Payment"
+                      'Complete Payment'
                     )}
                   </Button>
-                  
+
                   <Button
                     onClick={prevStep}
                     variant="outline"
@@ -298,12 +395,17 @@ export function PaymentStep() {
             <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1, rotate: 360 }}
-              transition={{ type: "spring", stiffness: 260, damping: 20, delay: 0.2 }}
+              transition={{
+                type: 'spring',
+                stiffness: 260,
+                damping: 20,
+                delay: 0.2,
+              }}
               className="w-24 h-24 rounded-full bg-green-600 flex items-center justify-center mb-6"
             >
               <Sparkles className="text-white" size={48} />
             </motion.div>
-            
+
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -312,16 +414,21 @@ export function PaymentStep() {
             >
               Order Complete!
             </motion.h1>
-            
+
             <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.6 }}
               className="text-muted-foreground text-lg max-w-lg mb-8"
             >
-              Your skip hire has been confirmed. We'll deliver your {state.selectedSkip?.size} yard skip on {state.date ? format(state.date, 'EEEE, MMMM do') : 'your selected date'}.
+              Your skip hire has been confirmed. We'll deliver your{' '}
+              {state.selectedSkip?.size} yard skip on{' '}
+              {state.date
+                ? format(state.date, 'EEEE, MMMM do')
+                : 'your selected date'}
+              .
             </motion.p>
-            
+
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -333,13 +440,29 @@ export function PaymentStep() {
                 Delivery Details
               </h3>
               <ul className="space-y-2 text-muted-foreground">
-                <li><span className="text-foreground font-medium">Date:</span> {state.date ? format(state.date, 'EEEE, MMMM do yyyy') : 'Not selected'}</li>
-                <li><span className="text-foreground font-medium">Time window:</span> Between 7am and 6pm</li>
-                <li><span className="text-foreground font-medium">Address:</span> {state.address}</li>
-                <li><span className="text-foreground font-medium">Order ID:</span> #SKP-{Math.floor(Math.random() * 100000)}</li>
+                <li>
+                  <span className="text-foreground font-medium">Date:</span>{' '}
+                  {state.date
+                    ? format(state.date, 'EEEE, MMMM do yyyy')
+                    : 'Not selected'}
+                </li>
+                <li>
+                  <span className="text-foreground font-medium">
+                    Time window:
+                  </span>{' '}
+                  Between 7am and 6pm
+                </li>
+                <li>
+                  <span className="text-foreground font-medium">Address:</span>{' '}
+                  {state.address}
+                </li>
+                <li>
+                  <span className="text-foreground font-medium">Order ID:</span>{' '}
+                  #SKP-{Math.floor(Math.random() * 100000)}
+                </li>
               </ul>
             </motion.div>
-            
+
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -347,7 +470,7 @@ export function PaymentStep() {
             >
               <Button
                 className="bg-primary text-primary-foreground hover:bg-primary/90 py-6 px-8 text-lg font-medium"
-                onClick={() => window.location.href = '/'}
+                onClick={() => (window.location.href = '/')}
               >
                 Return to Home
               </Button>
@@ -357,4 +480,4 @@ export function PaymentStep() {
       )}
     </div>
   );
-} 
+}

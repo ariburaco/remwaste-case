@@ -11,6 +11,7 @@ import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
 import { useDebounce } from '@/lib/hooks';
+import { ScrollArea } from './ui/scroll-area';
 
 export function AddressSearch() {
   const { state, updatePostcode, updateAddress, nextStep } = useOrder();
@@ -165,7 +166,7 @@ export function AddressSearch() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.2 }}
-                className="absolute z-10 w-full max-w-lg mt-1 bg-popover border border-input rounded-md shadow-md overflow-hidden"
+                className="absolute z-10 max-w-[calc(100%-2rem)] md:max-w-lg w-full mt-1 bg-popover border border-input rounded-md shadow-md overflow-hidden"
                 style={{
                   top: inputContainerRef.current
                     ? inputContainerRef.current.offsetTop +
@@ -174,7 +175,7 @@ export function AddressSearch() {
                     : 76,
                 }}
               >
-                <div className="max-h-72 overflow-y-auto">
+                <ScrollArea className="max-h-72 max-w-lg">
                   {results.map((item, index) => (
                     <motion.button
                       key={item.Id}
@@ -199,7 +200,7 @@ export function AddressSearch() {
                       </div>
                     </motion.button>
                   ))}
-                </div>
+                </ScrollArea>
               </motion.div>
             )}
           </AnimatePresence>

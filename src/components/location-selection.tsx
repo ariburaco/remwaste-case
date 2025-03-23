@@ -5,7 +5,17 @@ import { Card } from '@/components/ui/card';
 import { useOrder } from '@/lib/context';
 import { cn } from '@/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowLeft, ArrowRight, Camera, Clock, Home, InfoIcon, Truck, Upload, X } from 'lucide-react';
+import {
+  ArrowLeft,
+  ArrowRight,
+  Camera,
+  Clock,
+  Home,
+  InfoIcon,
+  Truck,
+  Upload,
+  X,
+} from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import Image from 'next/image';
@@ -30,11 +40,17 @@ const locationOptions = [
 ];
 
 export function LocationSelection() {
-  const { state, prevStep, nextStep, setSkipLocation, setSkipPhoto } = useOrder();
-  const [selectedLocation, setSelectedLocation] = useState<string>(state.skipLocation || 'private');
-  const [permitInfo, setPermitInfo] = useState<{ required: boolean; fee?: number }>({ 
+  const { state, prevStep, nextStep, setSkipLocation, setSkipPhoto } =
+    useOrder();
+  const [selectedLocation, setSelectedLocation] = useState<string>(
+    state.skipLocation || 'private'
+  );
+  const [permitInfo, setPermitInfo] = useState<{
+    required: boolean;
+    fee?: number;
+  }>({
     required: selectedLocation === 'public',
-    fee: 84.00
+    fee: 84.0,
   });
   const [photo, setPhoto] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
@@ -46,10 +62,10 @@ export function LocationSelection() {
   // Set up dropzone
   const onDrop = useCallback((acceptedFiles: File[]) => {
     if (acceptedFiles.length === 0) return;
-    
+
     const file = acceptedFiles[0];
     setPhoto(file);
-    
+
     // Create preview
     const reader = new FileReader();
     reader.onloadend = () => {
@@ -62,7 +78,7 @@ export function LocationSelection() {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: {
-      'image/*': ['.jpeg', '.jpg', '.png', '.webp']
+      'image/*': ['.jpeg', '.jpg', '.png', '.webp'],
     },
     maxFiles: 1,
     maxSize: 10 * 1024 * 1024, // 10MB max size
@@ -72,15 +88,15 @@ export function LocationSelection() {
       } else {
         setError('Please upload a valid image file (JPG, PNG)');
       }
-    }
+    },
   });
 
   // Handle location change
   const handleLocationChange = (locationId: string) => {
     setSelectedLocation(locationId);
-    setPermitInfo({ 
+    setPermitInfo({
       required: locationId === 'public',
-      fee: 84.00
+      fee: 84.0,
     });
   };
 
@@ -113,42 +129,50 @@ export function LocationSelection() {
       }
     } catch (err) {
       console.error('Error accessing camera:', err);
-      setError('Could not access camera. Please check permissions or try uploading an image instead.');
+      setError(
+        'Could not access camera. Please check permissions or try uploading an image instead.'
+      );
     }
   };
 
   const takePhoto = () => {
     const video = videoRef.current;
     const canvas = canvasRef.current;
-    
+
     if (!video || !canvas) return;
-    
+
     const context = canvas.getContext('2d');
     if (!context) return;
-    
+
     // Set canvas dimensions to match video
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
-    
+
     // Draw video frame to canvas
     context.drawImage(video, 0, 0, canvas.width, canvas.height);
-    
+
     // Convert to file
-    canvas.toBlob((blob) => {
-      if (blob) {
-        const file = new File([blob], 'skip-location.jpg', { type: 'image/jpeg' });
-        setPhoto(file);
-        setPhotoPreview(canvas.toDataURL('image/jpeg'));
-        stopCamera();
-      }
-    }, 'image/jpeg', 0.95);
+    canvas.toBlob(
+      (blob) => {
+        if (blob) {
+          const file = new File([blob], 'skip-location.jpg', {
+            type: 'image/jpeg',
+          });
+          setPhoto(file);
+          setPhotoPreview(canvas.toDataURL('image/jpeg'));
+          stopCamera();
+        }
+      },
+      'image/jpeg',
+      0.95
+    );
   };
-  
+
   const stopCamera = () => {
     const video = videoRef.current;
     if (video && video.srcObject) {
       const tracks = (video.srcObject as MediaStream).getTracks();
-      tracks.forEach(track => track.stop());
+      tracks.forEach((track) => track.stop());
       video.srcObject = null;
     }
     setIsCameraActive(false);
@@ -168,7 +192,7 @@ export function LocationSelection() {
       {/* Location selection cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         {locationOptions.map((option) => (
-          <Card 
+          <Card
             key={option.id}
             className={cn(
               'relative overflow-hidden cursor-pointer border-2 p-6',
@@ -189,9 +213,7 @@ export function LocationSelection() {
                 <p className="text-muted-foreground mt-1">
                   {option.description}
                 </p>
-                <p className="text-sm mt-4 text-foreground/90">
-                  {option.info}
-                </p>
+                <p className="text-sm mt-4 text-foreground/90">{option.info}</p>
               </div>
             </div>
           </Card>
@@ -213,8 +235,10 @@ export function LocationSelection() {
                 <div>
                   <h4 className="font-bold text-amber-500">Permit Required</h4>
                   <p className="text-amber-400/90 mt-1">
-                    A permit is required when placing a skip on a public road. We'll handle the permit application 
-                    process for you. An additional fee of £{permitInfo.fee?.toFixed(2)} will be added to your order.
+                    A permit is required when placing a skip on a public road.
+                    We'll handle the permit application process for you. An
+                    additional fee of £{permitInfo.fee?.toFixed(2)} will be
+                    added to your order.
                   </p>
                 </div>
               </div>
@@ -226,8 +250,8 @@ export function LocationSelection() {
                 <div>
                   <h4 className="font-bold text-foreground">Processing Time</h4>
                   <p className="text-muted-foreground mt-1">
-                    The council requires 5 working days notice to process permit applications. 
-                    Please plan your delivery date accordingly.
+                    The council requires 5 working days notice to process permit
+                    applications. Please plan your delivery date accordingly.
                   </p>
                 </div>
               </div>
@@ -243,22 +267,23 @@ export function LocationSelection() {
             Skip Placement Photo
           </h3>
           <p className="text-muted-foreground text-sm mt-1">
-            Please provide a photo of where you plan to place the skip. 
-            This helps us ensure proper placement and identify any potential access issues.
+            Please provide a photo of where you plan to place the skip. This
+            helps us ensure proper placement and identify any potential access
+            issues.
           </p>
         </div>
 
         <div className="p-6 bg-background">
           {photoPreview ? (
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               className="relative rounded-md overflow-hidden"
             >
-              <img 
-                src={photoPreview} 
-                alt="Skip location" 
-                className="w-full h-64 object-cover" 
+              <img
+                src={photoPreview}
+                alt="Skip location"
+                className="w-full h-64 object-cover"
               />
               <Button
                 variant="destructive"
@@ -271,14 +296,14 @@ export function LocationSelection() {
             </motion.div>
           ) : isCameraActive ? (
             <div className="relative h-64 bg-black rounded-md overflow-hidden">
-              <video 
-                ref={videoRef} 
-                autoPlay 
-                playsInline 
+              <video
+                ref={videoRef}
+                autoPlay
+                playsInline
                 className="w-full h-full object-cover"
               />
               <canvas ref={canvasRef} className="hidden" />
-              
+
               <div className="absolute bottom-0 left-0 right-0 flex justify-center p-4 bg-black/50">
                 <Button
                   variant="default"
@@ -300,9 +325,9 @@ export function LocationSelection() {
             <div
               {...getRootProps()}
               className={cn(
-                "border-2 border-dashed rounded-md h-64 flex flex-col items-center justify-center cursor-pointer p-4",
-                isDragActive ? "border-primary bg-primary/5" : "border-border",
-                error ? "border-destructive" : ""
+                'border-2 border-dashed rounded-md h-64 flex flex-col items-center justify-center cursor-pointer p-4',
+                isDragActive ? 'border-primary bg-primary/5' : 'border-border',
+                error ? 'border-destructive' : ''
               )}
             >
               <input {...getInputProps()} />
@@ -311,14 +336,16 @@ export function LocationSelection() {
                   <Upload size={30} className="text-primary" />
                 </div>
                 <p className="text-foreground font-medium">
-                  {isDragActive ? "Drop the image here" : "Drag and drop an image here"}
+                  {isDragActive
+                    ? 'Drop the image here'
+                    : 'Drag and drop an image here'}
                 </p>
                 <p className="text-muted-foreground text-sm mt-1 mb-3">
                   or click to browse files
                 </p>
                 <div className="flex gap-4">
-                  <Button 
-                    type="button" 
+                  <Button
+                    type="button"
                     variant="outline"
                     className="border-border flex items-center gap-2"
                     onClick={(e) => {
@@ -328,9 +355,9 @@ export function LocationSelection() {
                   >
                     <Camera size={18} /> Take Photo
                   </Button>
-                  <Button 
+                  <Button
                     type="button"
-                    variant="outline" 
+                    variant="outline"
                     className="border-border flex items-center gap-2"
                   >
                     <Upload size={18} /> Upload Photo
@@ -346,7 +373,7 @@ export function LocationSelection() {
       </div>
 
       {/* Navigation buttons */}
-      <div className="flex justify-between mt-8">
+      <div className="max-md:fixed w-full max-md:bottom-0 max-md:border-t flex justify-between max-md:gap-4 max-md:p-4 max-md:left-0 max-md:right-0 max-md:z-10 max-md:bg-background max-md:shadow-sm">
         <Button
           onClick={prevStep}
           variant="outline"
@@ -355,7 +382,7 @@ export function LocationSelection() {
           <ArrowLeft size={18} className="mr-2" />
           Back
         </Button>
-        <Button 
+        <Button
           onClick={handleContinue}
           className="bg-primary text-primary-foreground hover:bg-primary/90"
         >
@@ -364,4 +391,4 @@ export function LocationSelection() {
       </div>
     </div>
   );
-} 
+}

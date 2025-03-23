@@ -82,10 +82,10 @@ export function OrderProvider({ children }: { children: ReactNode }) {
   };
 
   const setSkipLocation = (location: string) => {
-    setState((prev) => ({ 
-      ...prev, 
+    setState((prev) => ({
+      ...prev,
       skipLocation: location,
-      permitRequired: location === 'public'
+      permitRequired: location === 'public',
     }));
   };
 
