@@ -12,7 +12,7 @@ This project is a redesign of the skip selection page for WeWantWaste, focusing 
 
 ## Live Demo
 
-You can view the live demo [here](#) (add your sandbox link when ready)
+You can view the live demo [https://remwaste-case.vercel.app/](#)
 
 ## Technologies Used
 
@@ -20,7 +20,6 @@ You can view the live demo [here](#) (add your sandbox link when ready)
 - **Language**: TypeScript
 - **UI Components**: Radix UI
 - **Styling**: Tailwind CSS
-- **Form Handling**: React Hook Form with Zod validation
 - **State Management**: TanStack React Query
 - **Animations**: Framer Motion
 
@@ -97,16 +96,13 @@ remwaste-case/
 
 ## Development Process
 
-This project was fully created with Cursor IDE and Claude AI assistance, showcasing the power of AI-assisted development for modern web applications. (also this Readme file too :)
+This project was fully created with Cursor IDE and Claude AI assistance, showcasing the power of AI-assisted development for modern web applications. (also this Readme file too!)
 
 ## Original Requirements
 
 The challenge was to redesign the skip selection page of the WeWantWaste service:
+
 - Maintain all functionality of the original page
 - Create a responsive design for mobile and desktop
 - Focus on clean, maintainable React code
 - Use data from the WeWantWaste API endpoint
-
-## License
-
-[MIT](LICENSE)
